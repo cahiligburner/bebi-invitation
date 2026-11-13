@@ -74,6 +74,52 @@
       animation: floatUp linear infinite;
     }
 
+    /* Face stickers rise up to the middle of the screen and linger visibly */
+    @keyframes floatToMiddle {
+      0% {
+        transform: translateY(0) scale(0.6) rotate(-10deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.4;
+      }
+      40% {
+        transform: translateY(-46dvh) scale(1.08) rotate(6deg);
+        opacity: 0.3;
+      }
+      75% {
+        transform: translateY(-48dvh) scale(1) rotate(-4deg);
+        opacity: 0.2;
+      }
+      100% {
+        transform: translateY(-50dvh) scale(0.95) rotate(8deg);
+        opacity: 0;
+      }
+    }
+
+    /* Circular face sticker bubbles for celebration burst */
+    .floating-face {
+      position: fixed;
+      bottom: -70px;
+      pointer-events: none;
+      z-index: 40;
+      width: 58px;
+      height: 58px;
+      border-radius: 9999px;
+      object-fit: cover;
+      border: 3px solid #ff9eb2;
+      box-shadow: 0 8px 20px rgba(244, 63, 102, 0.35);
+      background-color: #ffe3e8;
+      animation: floatToMiddle ease-out forwards;
+    }
+
+    @media (min-width: 640px) {
+      .floating-face {
+        width: 72px;
+        height: 72px;
+      }
+    }
+
     /* Smooth card entrance animation */
     @keyframes fadeSlideUp {
       from {
@@ -113,7 +159,7 @@
 </head>
 <body class="bg-cream text-stone-800 flex flex-col justify-between relative overflow-x-hidden selection:bg-blush-200 selection:text-blush-600">
 
-  <!-- Container for decorative floating hearts -->
+  <!-- Container for decorative floating hearts & faces -->
   <div id="hearts-container" aria-hidden="true"></div>
 
   <!-- Top subtle progress / header bar -->
@@ -370,13 +416,24 @@
   <!-- ======================================================================= -->
   <script>
     /**
+     * 👇 ADD YOUR FACE PHOTO FILENAMES HERE 👇
+     * Upload cropped photos of your faces to the same folder as index.html
+     * and update the filenames below!
+     */
+    const FACE_IMAGES = [
+      "alisse2.jpg",
+      "alisse.jpg"
+   
+    ];
+
+    /**
      * 👇 CUSTOMIZE YOUR CAFES / RESTAURANTS HERE 👇
      * Replace `image` and `menuImage` with your own uploaded filenames in GitHub
      * (e.g. "cafe1.jpg", "menu1.jpg") or keep the built-in placeholders!
      */
     const CAFES = [
       {
-         id: 1,
+        id: 1,
         name: "Humble Beginnings Cafe",
         location: "Kamias Rd, Qc",
         tag: "til 10pm",
@@ -386,7 +443,7 @@
         menuImage: "humblebeginnings2.jpg"
       },
       {
-       id: 2,
+        id: 2,
         name: "NEO ART CAFE",
         location: "Amoranto St., Qc",
         tag: "til 12am",
@@ -396,7 +453,7 @@
         menuImage: "neo2.jpg"
       },
       {
-         id: 3,
+        id: 3,
         name: "Kandle Cafe",
         location: "Diliman, QC",
         tag: "til 12am",
@@ -498,7 +555,7 @@
     }
 
     /**
-     * Handle clicking "Yes" -> Burst hearts & navigate to Cafe selection
+     * Handle clicking "Yes" -> Burst faces & hearts, then navigate to Cafe selection
      */
     function handleYesClick() {
       spawnCelebrationHearts();
@@ -658,22 +715,55 @@
     }
 
     /**
-     * Extra burst of hearts when clicking Yes or confirming the date
+     * Extra burst of your faces (floating up to the middle & staying longer) + hearts
      */
     function spawnCelebrationHearts() {
       const container = document.getElementById("hearts-container");
-      const symbols = ["💖", "💘", "🎉", "💕", "✨"];
+      const heartSymbols = ["💖", "💘", "💕", "💗", "✨"];
+      const totalParticles = 24;
 
-      for (let i = 0; i < 18; i++) {
-        const heart = document.createElement("div");
-        heart.className = "floating-heart text-2xl select-none";
-        heart.textContent = symbols[i % symbols.length];
-        heart.style.left = `${10 + Math.random() * 80}vw`;
-        heart.style.animationDuration = `${3 + Math.random() * 3}s`;
-        heart.style.animationDelay = "0s";
-        container.appendChild(heart);
+      for (let i = 0; i < totalParticles; i++) {
+        // ~60% your faces, ~40% hearts
+        const isFace = FACE_IMAGES.length > 0 && i % 5 !== 0 && i % 5 !== 3;
+        let particle;
 
-        setTimeout(() => heart.remove(), 6000);
+        if (isFace) {
+          particle = document.createElement("img");
+          particle.src = FACE_IMAGES[i % FACE_IMAGES.length];
+          particle.alt = "";
+          particle.className = "floating-face select-none";
+          particle.style.left = `${10 + Math.random() * 80}vw`;
+
+          // Longer duration (6.5s - 8.5s) so they pause in the middle of the page
+          const duration = 6.5 + Math.random() * 2;
+          const delay = Math.random() * 0.6;
+          particle.style.animationDuration = `${duration}s`;
+          particle.style.animationDelay = `${delay}s`;
+
+          // Fallback to a heart if an image filename isn't uploaded yet
+          particle.onerror = function () {
+            const fallback = document.createElement("div");
+            fallback.className = "floating-heart text-2xl select-none";
+            fallback.textContent = "💖";
+            fallback.style.left = this.style.left;
+            fallback.style.animationDuration = "4.5s";
+            this.replaceWith(fallback);
+            setTimeout(() => fallback.remove(), 5000);
+          };
+
+          container.appendChild(particle);
+          setTimeout(() => particle.remove(), (duration + delay) * 1000 + 200);
+        } else {
+          particle = document.createElement("div");
+          particle.className = "floating-heart text-2xl sm:text-3xl select-none";
+          particle.textContent = heartSymbols[i % heartSymbols.length];
+          particle.style.left = `${8 + Math.random() * 84}vw`;
+          particle.style.animationDuration = `${4.5 + Math.random() * 2.5}s`;
+          particle.style.animationDelay = `${Math.random() * 0.4}s`;
+          container.appendChild(particle);
+
+          setTimeout(() => particle.remove(), 7500);
+        }
       }
     }
 
