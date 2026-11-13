@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Coffee Date Invitation for Bebi</title>
+  <!-- Tailwind CSS via CDN for responsive, modern styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans for a cute, romantic editorial aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          },
+          colors: {
+            blush: {
+              50: '#fff5f7',
+              100: '#ffe3e8',
+              200: '#ffc9d4',
+              300: '#ff9eb2',
+              400: '#ff6687',
+              500: '#f43f66',
+              600: '#e11d48',
+            },
+            cream: '#fffaf7',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Mobile safe-area & dynamic viewport support */
+    body {
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Subtle floating heart background animation */
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100dvh) scale(0.8) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.45;
+      }
+      85% {
+        opacity: 0.45;
+      }
+      100% {
+        transform: translateY(-15dvh) scale(1.1) rotate(25deg);
+        opacity: 0;
+      }
+    }
+
+    .floating-heart {
+      position: fixed;
+      bottom: -50px;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatUp linear infinite;
+    }
+
+    /* Smooth card entrance animation */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .step-enter {
+      animation: fadeSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Smooth transition for the runaway No button */
+    #no-btn {
+      transition: left 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  top 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  transform 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    #yes-btn {
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  background-color 0.2s ease, 
+                  box-shadow 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    /* Allow smooth pinch-zoom on the lightbox menu image */
+    #lightbox-img {
+      touch-action: pinch-zoom pan-x pan-y;
+    }
+  </style>
+</head>
+<body class="bg-cream text-stone-800 flex flex-col justify-between relative overflow-x-hidden selection:bg-blush-200 selection:text-blush-600">
+
+  <!-- Container for decorative floating hearts -->
+  <div id="hearts-container" aria-hidden="true"></div>
+
+  <!-- Top subtle progress / header bar -->
+  <header id="main-header" class="w-full max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-2 flex items-center justify-between relative z-10">
+    <div class="flex items-center gap-2 text-blush-500 font-semibold text-sm tracking-wide">
+      <span class="text-lg">💌</span>
+      <span>Special Delivery</span>
+    </div>
+    <div id="step-indicator" class="text-xs font-medium text-stone-400 bg-white/85 backdrop-blur-sm px-3 py-1.5 rounded-full border border-blush-100 shadow-sm">
+      Step 1 of 4
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow flex items-center justify-center px-4 py-3 sm:py-6 relative z-10">
+    
+    <!-- ===================================================================== -->
+    <!-- STEP 1: THE BIG QUESTION ("Want to go on a date?")                    -->
+    <!-- ===================================================================== -->
+    <section id="step-1" class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 shadow-xl shadow-blush-200/40 border border-blush-100 text-center step-enter">
+      <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5 bg-blush-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl shadow-inner border border-blush-100">
+        🥺👉👈
+      </div>
+      
+      <p class="text-[11px] sm:text-xs uppercase tracking-widest font-bold text-blush-400 mb-2">Important Question</p>
+      <h1 class="font-serif text-2xl sm:text-4xl font-bold text-stone-800 mb-3 leading-tight">
+        Want to go on a date with me?
+      </h1>
+      <p id="funny-subtitle" class="text-stone-500 text-sm sm:text-base mb-7 min-h-[44px] flex items-center justify-center px-2">
+        Choose wisely... (there is only one right answer ✨)
+      </p>
+
+      <!-- Touch-friendly Button Container (min 48px height targets) -->
+      <div class="flex flex-wrap items-center justify-center gap-4 min-h-[72px] relative">
+        <button 
+          id="yes-btn" 
+          onclick="handleYesClick()"
+          class="min-h-[52px] px-8 py-3.5 bg-gradient-to-r from-blush-500 to-rose-500 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-blush-500/30 cursor-pointer z-20 text-base sm:text-lg"
+        >
+          Yes! 💖
+        </button>
+
+        <button 
+          id="no-btn" 
+          class="min-h-[48px] px-6 py-3 bg-stone-100 active:bg-stone-200 text-stone-600 font-semibold rounded-2xl border border-stone-200 cursor-pointer z-40 text-sm sm:text-base shadow-sm"
+        >
+          No
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- STEP 2: CAFE / RESTAURANT SELECTION (1-col mobile, multi-col desktop) -->
+    <!-- ===================================================================== -->
+    <section id="step-2" class="hidden w-full max-w-4xl step-enter pb-6">
+      <div class="text-center mb-6 sm:mb-8">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-blush-100 text-blush-600 font-semibold text-xs mb-2.5">
+          Yay! Best decision ever 🎉
+        </span>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-stone-800 mb-2">
+          Pick where we're going ✨
+        </h2>
+        <p class="text-stone-500 text-sm sm:text-base max-w-lg mx-auto">
+          Tap on a spot below to check out their menu and lock in our date!
+        </p>
+      </div>
+
+      <!-- Responsive Cafe Cards Grid: 1 column on mobile (<640px), 2 on tablet, 3 on desktop -->
+      <div id="cafe-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <!-- Cards injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- STEP 3: MOBILE-FRIENDLY CAFE MENU VIEWER & DISH SELECTION             -->
+    <!-- ===================================================================== -->
+    <section id="step-3" class="hidden w-full max-w-2xl bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-8 shadow-xl shadow-blush-200/40 border border-blush-100 step-enter pb-24 sm:pb-8">
+      <!-- Top Navigation back to cafes (min 48px touch target) -->
+      <div class="flex items-center justify-between mb-4">
+        <button 
+          onclick="goToStep(2)" 
+          class="min-h-[44px] inline-flex items-center gap-1.5 text-sm font-semibold text-stone-600 active:text-blush-500 transition-colors py-2 px-3 rounded-xl bg-stone-50 active:bg-blush-50 border border-stone-100"
+        >
+          <span>←</span> Back to spots
+        </button>
+        <span id="selected-cafe-tag" class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-blush-50 text-blush-500 border border-blush-100">
+          Cafe
+        </span>
+      </div>
+
+      <!-- Selected Cafe Title -->
+      <div class="mb-5">
+        <h2 id="menu-cafe-name" class="font-serif text-2xl sm:text-3xl font-bold text-stone-800">
+          Cafe Name
+        </h2>
+        <p id="menu-cafe-desc" class="text-stone-500 text-sm mt-1">
+          Cafe description goes here.
+        </p>
+      </div>
+
+      <!-- Menu Image Display Area with Tap-to-Zoom Lightbox -->
+      <div class="mb-5">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-stone-400">
+            📜AI-generated menu summary based on Google Maps user uploads. (Tap Image to zoom)
+          </label>
+        </div>
+
+        <div 
+          onclick="openMenuLightbox()"
+          class="relative group rounded-2xl overflow-hidden border-2 border-dashed border-blush-200 bg-blush-50/40 p-2 cursor-zoom-in"
+        >
+          <img 
+            id="menu-image" 
+            src="" 
+            alt="Cafe Menu" 
+            class="w-full h-auto max-h-[52dvh] object-contain rounded-xl mx-auto bg-white shadow-sm"
+          />
+          <div class="absolute bottom-4 right-4 bg-stone-900/75 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+            <span>🔍</span> Tap to enlarge
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional Craving / Dish Note Input (16px font prevents iOS auto-zoom) -->
+      <div class="mb-4 sm:mb-6">
+        <label for="food-choice-input" class="block text-sm font-semibold text-stone-700 mb-2">
+          What looks good to you? <span class="text-stone-400 font-normal">(Optional)</span>
+        </label>
+        <input 
+          type="text" 
+          id="food-choice-input" 
+          placeholder="e.g., Iced Spanish Latte & Pasta, or surprise me!" 
+          class="w-full min-h-[48px] px-4 py-3 rounded-2xl border border-stone-200 bg-stone-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blush-300 focus:border-blush-400 text-base sm:text-sm transition-all"
+        />
+      </div>
+
+      <!-- Sticky Bottom CTA on Mobile, Standard Button on Desktop -->
+      <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-blush-100 sm:static sm:p-0 sm:bg-transparent sm:border-0 z-30 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-0">
+        <button 
+          onclick="confirmDateSelection()" 
+          class="w-full min-h-[54px] py-3.5 px-6 bg-gradient-to-r from-blush-500 to-rose-500 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-blush-500/30 transition-all text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>Pick This Spot & Confirm</span>
+          <span>💘</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- STEP 4: COMPACT SINGLE-SCREEN MOBILE BOARDING PASS TICKET             -->
+    <!-- ===================================================================== -->
+    <section id="step-4" class="hidden w-full max-w-sm sm:max-w-md step-enter my-auto">
+      <!-- Compact Ticket Card designed to fit 100% inside a phone viewport without scrolling -->
+      <div class="bg-white rounded-3xl shadow-2xl shadow-blush-200/60 border border-blush-100 overflow-hidden">
+        <!-- Top Pink Boarding Pass Header -->
+        <div class="bg-gradient-to-r from-blush-500 to-rose-500 px-5 py-4 sm:p-6 text-center text-white relative">
+          <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-[11px] uppercase tracking-widest font-bold text-white mb-1">
+            <span>🎟️</span> Official Date Pass
+          </div>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold leading-tight">It's a Date! 💕</h2>
+        </div>
+
+        <!-- Ticket Details -->
+        <div class="px-5 py-4 sm:p-7 space-y-3.5">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+            <div class="pr-2">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-stone-400">Destination</p>
+              <p id="final-cafe-name" class="font-serif text-lg sm:text-xl font-bold text-stone-800 leading-snug mt-0.5">Cafe Name</p>
+              <p id="final-cafe-location" class="text-xs text-stone-500 mt-0.5">Location</p>
+            </div>
+            <span id="final-cafe-emoji" class="text-2xl sm:text-3xl bg-blush-50 w-12 h-12 rounded-2xl border border-blush-100 flex items-center justify-center shrink-0">☕</span>
+          </div>
+
+          <div id="final-food-container" class="border-b border-stone-100 pb-3">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-stone-400">Craving / Order Note</p>
+            <p id="final-food-choice" class="text-sm font-semibold text-stone-700 mt-0.5 line-clamp-2">Anything delicious!</p>
+          </div>
+
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-stone-400 font-semibold uppercase tracking-wider text-[11px]">Date Status</span>
+            <span class="inline-flex items-center gap-1.5 font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Locked In ✨
+            </span>
+          </div>
+        </div>
+
+        <!-- Perforated Ticket Divider -->
+        <div class="relative flex items-center justify-center py-1">
+          <div class="w-full border-t-2 border-dashed border-blush-200"></div>
+          <div class="w-5 h-5 rounded-full bg-cream border border-blush-100 absolute -left-2.5"></div>
+          <div class="w-5 h-5 rounded-full bg-cream border border-blush-100 absolute -right-2.5"></div>
+        </div>
+
+        <!-- Exact Screenshot Confirmation Callout -->
+        <div class="px-5 pt-2.5 pb-5 text-center bg-blush-50/50">
+          <div class="bg-white border-2 border-blush-400 rounded-2xl p-3.5 shadow-sm">
+            <p class="text-[11px] uppercase tracking-wider font-bold text-blush-500 mb-0.5">Action Required</p>
+            <p class="text-base sm:text-lg font-extrabold text-stone-800 leading-snug">
+              Send this ss to me for confirmation 📸💌
+            </p>
+          </div>
+
+          <button 
+            onclick="resetApp()" 
+            class="mt-3 min-h-[36px] px-4 text-xs font-semibold text-stone-400 active:text-blush-500 transition-colors cursor-pointer"
+          >
+            ↺ Pick a different place
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Full-Screen Pinch-to-Zoom Lightbox Modal for Menu Image -->
+  <div 
+    id="menu-lightbox" 
+    onclick="closeMenuLightbox()"
+    class="hidden fixed inset-0 z-50 bg-stone-950/90 backdrop-blur-sm flex flex-col justify-between p-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))]"
+  >
+    <div class="flex items-center justify-between text-white">
+      <span class="text-xs font-medium text-stone-300">Pinch with two fingers to zoom 🔍</span>
+      <button 
+        onclick="closeMenuLightbox()" 
+        class="min-h-[44px] min-w-[44px] px-4 rounded-full bg-white/15 active:bg-white/25 text-white font-bold text-sm flex items-center justify-center"
+      >
+        ✕ Close
+      </button>
+    </div>
+
+    <div class="flex-grow flex items-center justify-center overflow-auto my-2" onclick="event.stopPropagation()">
+      <img 
+        id="lightbox-img" 
+        src="" 
+        alt="Enlarged Cafe Menu" 
+        class="max-w-full max-h-[80dvh] object-contain rounded-xl shadow-2xl"
+      />
+    </div>
+  </div>
+
+  <!-- Subtle Footer -->
+  <footer id="main-footer" class="w-full text-center py-3 text-xs text-stone-400 relative z-10">
+    Made with 💖 just for bebi Alisse
+  </footer>
+
+  <!-- ======================================================================= -->
+  <!-- JAVASCRIPT LOGIC & EASY CUSTOMIZATION CONFIG                            -->
+  <!-- ======================================================================= -->
+  <script>
+    /**
+     * 👇 CUSTOMIZE YOUR CAFES / RESTAURANTS HERE 👇
+     * Replace `image` and `menuImage` with your own uploaded filenames in GitHub
+     * (e.g. "cafe1.jpg", "menu1.jpg") or keep the built-in placeholders!
+     */
+    const CAFES = [
+      {
+        id: 1,
+        name: "Humble Beginnings Cafe",
+        location: "Kamias Rd, Qc",
+        tag: "til 10pm",
+        emoji: "🍗☕",
+        description: "One side of the café is quiet and ideal for a slow, relaxing meal, while another room plays music for a livelier atmosphere.",
+        image: "humblebeginnings1.jpg",
+        menuImage: "humblebeginnings2.jpg"
+      },
+      {
+        id: 2,
+        name: "NEO ART CAFE",
+        location: "Amoranto St., Qc",
+        tag: "til 12am",
+        emoji: "🎨☕",
+        description: "Warm meals, cozy drinks, creative DIYs, and thoughtful gifts — everything you need to make the season feel extra special..",
+        image: "neo1.jpg",
+        menuImage: "neo2.jpg"
+      },
+      {
+        id: 3,
+        name: "Kandle Cafe",
+        location: "Diliman, QC",
+        tag: "til 12am",
+        emoji: "🍔☕",
+        description: "Topnotch ambiance and good food",
+        image: "kandle1.jpg",
+        menuImage: "kandle2.jpg"
+      }
+    ];
+
+    // Funny messages shown when hovering/tapping the "No" button
+    const FUNNY_NO_MESSAGES = [
+      "No",
+      "Nice try! Wrong button 😉",
+      "Are you sure? My finger slipped for you",
+      "Error 404: 'No' not found 🚫",
+      "System override: Only Yes works!",
+      "Don't break my heart 💔",
+      "Too slow! Try the pink button 🏃💨",
+      "Wait, misclick right? 🤔",
+      "Just press Yes already! 🥺",
+      "Okay now you're just teasing 😭"
+    ];
+
+    const FUNNY_SUBTITLES = [
+      "Choose wisely... (there is only one right answer ✨)",
+      "Nice try! Wrong button 😉",
+      "Are you sure? My finger slipped for you 👀",
+      "Error 404: 'No' not found — System override: Only Yes works! 😌💖",
+      "Look how big and shiny the Yes button is getting!"
+    ];
+
+    // App State
+    let noAttempts = 0;
+    let selectedCafe = null;
+
+    // DOM Elements
+    const noBtn = document.getElementById("no-btn");
+    const yesBtn = document.getElementById("yes-btn");
+    const funnySubtitle = document.getElementById("funny-subtitle");
+    const stepIndicator = document.getElementById("step-indicator");
+
+    /**
+     * Makes the "No" button run away to a random safe viewport coordinate
+     * strictly inside the visible mobile screen bounds without overlapping "Yes".
+     */
+    function evadeNoButton(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      noAttempts++;
+
+      // Update No button text
+      const msgIndex = Math.min(noAttempts, FUNNY_NO_MESSAGES.length - 1);
+      noBtn.textContent = FUNNY_NO_MESSAGES[msgIndex];
+
+      // Update subtitle text
+      const subIndex = Math.min(noAttempts, FUNNY_SUBTITLES.length - 1);
+      funnySubtitle.textContent = FUNNY_SUBTITLES[subIndex];
+
+      // Grow the Yes button gradually (capped so it stays clean on mobile)
+      const scale = Math.min(1 + noAttempts * 0.1, 1.55);
+      yesBtn.style.transform = `scale(${scale})`;
+
+      // Switch to fixed positioning so it can jump safely anywhere in the viewport
+      noBtn.style.position = "fixed";
+
+      // Measure dimensions AFTER updating text so width/height are accurate
+      const btnRect = noBtn.getBoundingClientRect();
+      const yesRect = yesBtn.getBoundingClientRect();
+
+      const viewportW = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const viewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      const margin = 16;
+      const maxX = Math.max(margin, viewportW - btnRect.width - margin);
+      const maxY = Math.max(margin + 44, viewportH - btnRect.height - margin);
+
+      let randomX = margin;
+      let randomY = margin + 44;
+
+      // Try up to 25 times to find a coordinate that does NOT overlap the Yes button
+      for (let attempt = 0; attempt < 25; attempt++) {
+        const candidateX = Math.floor(Math.random() * (maxX - margin + 1)) + margin;
+        const candidateY = Math.floor(Math.random() * (maxY - (margin + 44) + 1)) + (margin + 44);
+
+        const buffer = 16;
+        const overlapsYes = !(
+          candidateX + btnRect.width + buffer < yesRect.left ||
+          candidateX - buffer > yesRect.right ||
+          candidateY + btnRect.height + buffer < yesRect.top ||
+          candidateY - buffer > yesRect.bottom
+        );
+
+        randomX = candidateX;
+        randomY = candidateY;
+        if (!overlapsYes) break;
+      }
+
+      noBtn.style.left = `${randomX}px`;
+      noBtn.style.top = `${randomY}px`;
+    }
+
+    // Trigger evasion on mouse hover, click, and mobile touch
+    noBtn.addEventListener("mouseenter", evadeNoButton);
+    noBtn.addEventListener("click", evadeNoButton);
+    noBtn.addEventListener("touchstart", evadeNoButton, { passive: false });
+
+    /**
+     * Handle clicking "Yes" -> Burst hearts & navigate to Cafe selection
+     */
+    function handleYesClick() {
+      noBtn.style.display = "none";
+      spawnCelebrationHearts();
+      goToStep(2);
+    }
+
+    /**
+     * Switch visible step cleanly
+     */
+    function goToStep(stepNumber) {
+      for (let i = 1; i <= 4; i++) {
+        const section = document.getElementById(`step-${i}`);
+        if (i === stepNumber) {
+          section.classList.remove("hidden");
+          section.classList.remove("step-enter");
+          void section.offsetWidth;
+          section.classList.add("step-enter");
+        } else {
+          section.classList.add("hidden");
+        }
+      }
+      stepIndicator.textContent = `Step ${stepNumber} of 4`;
+
+      // Hide footer on Step 4 so the screenshot boarding pass fits cleanly on 1 mobile screen
+      const footer = document.getElementById("main-footer");
+      if (footer) {
+        footer.style.display = stepNumber === 4 ? "none" : "block";
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /**
+     * Render all Cafe cards in Step 2 with mobile-friendly >=48px tap targets
+     */
+    function renderCafes() {
+      const grid = document.getElementById("cafe-grid");
+      grid.innerHTML = "";
+
+      CAFES.forEach((cafe) => {
+        const card = document.createElement("div");
+        card.className = "group bg-white rounded-3xl overflow-hidden shadow-md active:scale-[0.99] hover:shadow-xl shadow-blush-200/30 border border-blush-100 transition-all duration-200 cursor-pointer flex flex-col justify-between";
+        card.onclick = () => selectCafe(cafe);
+
+        card.innerHTML = `
+          <div>
+            <div class="relative h-44 sm:h-44 overflow-hidden bg-blush-50">
+              <img 
+                src="${cafe.image}" 
+                alt="${cafe.name}" 
+                onerror="this.src='https://placehold.co/600x400/ffe3e8/e11d48?text=${encodeURIComponent(cafe.name)}'"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <span class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-stone-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                ${cafe.tag}
+              </span>
+              <span class="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm text-lg w-10 h-10 rounded-full flex items-center justify-center shadow-sm">
+                ${cafe.emoji}
+              </span>
+            </div>
+            <div class="p-5 pb-3">
+              <h3 class="font-serif text-xl font-bold text-stone-800 group-hover:text-blush-500 transition-colors">
+                ${cafe.name}
+              </h3>
+              <p class="text-xs font-medium text-blush-400 mt-1">${cafe.location}</p>
+              <p class="text-stone-500 text-sm mt-2 leading-relaxed">
+                ${cafe.description}
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-5 pt-2">
+            <div class="min-h-[48px] w-full py-3 px-4 rounded-2xl bg-blush-50 group-hover:bg-blush-500 text-blush-600 group-hover:text-white font-bold text-sm flex items-center justify-center transition-colors">
+              View Menu →
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    /**
+     * Open Step 3 with the selected cafe's menu
+     */
+    function selectCafe(cafe) {
+      selectedCafe = cafe;
+      document.getElementById("selected-cafe-tag").textContent = cafe.tag;
+      document.getElementById("menu-cafe-name").textContent = `${cafe.emoji} ${cafe.name}`;
+      document.getElementById("menu-cafe-desc").textContent = cafe.description;
+      
+      const menuImg = document.getElementById("menu-image");
+      menuImg.src = cafe.menuImage;
+      menuImg.onerror = function () {
+        this.src = `https://placehold.co/600x800/fff5f7/e11d48?text=${encodeURIComponent(cafe.name + " Menu")}`;
+      };
+
+      goToStep(3);
+    }
+
+    /**
+     * Open full-screen pinch-to-zoom lightbox for reading small menu text on phones
+     */
+    function openMenuLightbox() {
+      const currentSrc = document.getElementById("menu-image").src;
+      if (!currentSrc) return;
+      document.getElementById("lightbox-img").src = currentSrc;
+      document.getElementById("menu-lightbox").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMenuLightbox() {
+      document.getElementById("menu-lightbox").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    /**
+     * Populate Step 4 Confirmation Ticket and show it
+     */
+    function confirmDateSelection() {
+      if (!selectedCafe) return;
+
+      const foodChoice = document.getElementById("food-choice-input").value.trim();
+
+      document.getElementById("final-cafe-name").textContent = selectedCafe.name;
+      document.getElementById("final-cafe-location").textContent = selectedCafe.location;
+      document.getElementById("final-cafe-emoji").textContent = selectedCafe.emoji;
+      document.getElementById("final-food-choice").textContent = foodChoice || "Surprise me / Anything on the menu! ✨";
+
+      spawnCelebrationHearts();
+      goToStep(4);
+    }
+
+    /**
+     * Reset back to Cafe Selection if they want to change their pick
+     */
+    function resetApp() {
+      document.getElementById("food-choice-input").value = "";
+      goToStep(2);
+    }
+
+    /**
+     * Create gentle ambient floating hearts in the background
+     */
+    function initFloatingHearts() {
+      const container = document.getElementById("hearts-container");
+      const symbols = ["💖", "💕", "✨", "🌸", "💗"];
+
+      for (let i = 0; i < 14; i++) {
+        const heart = document.createElement("div");
+        heart.className = "floating-heart text-lg sm:text-xl select-none";
+        heart.textContent = symbols[i % symbols.length];
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.animationDuration = `${12 + Math.random() * 14}s`;
+        heart.style.animationDelay = `${Math.random() * 10}s`;
+        container.appendChild(heart);
+      }
+    }
+
+    /**
+     * Extra burst of hearts when clicking Yes or confirming the date
+     */
+    function spawnCelebrationHearts() {
+      const container = document.getElementById("hearts-container");
+      const symbols = ["💖", "💘", "🎉", "💕", "✨"];
+
+      for (let i = 0; i < 18; i++) {
+        const heart = document.createElement("div");
+        heart.className = "floating-heart text-2xl select-none";
+        heart.textContent = symbols[i % symbols.length];
+        heart.style.left = `${10 + Math.random() * 80}vw`;
+        heart.style.animationDuration = `${3 + Math.random() * 3}s`;
+        heart.style.animationDelay = "0s";
+        container.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 6000);
+      }
+    }
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", () => {
+      renderCafes();
+      initFloatingHearts();
+    });
+  </script>
+</body>
+</html>
